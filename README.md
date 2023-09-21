@@ -1,10 +1,6 @@
-# clojurelab
+## Result:
+![image](https://github.com/ge0rge1012/clojurelab/assets/43102245/121dfe76-a951-49b7-b02c-07d8462d5ef4)
 
-A Clojure library designed to ... well, that part is up to you.
-
-## Usage
-
-FIXME
 
 ## License
 
