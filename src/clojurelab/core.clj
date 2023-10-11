@@ -1,22 +1,17 @@
-";Опишите функцию, лениво возвращающий минимальный элемент
-;внутри плавающего окна в бесконечной числовой
-;последовательности. Оптимизируйте производительность."
+; Напишите функцию, которая принимает на вход канал состоящий из последовательности чисел,
+; первое из которых является количеством последующих элементов, которые нужно поместить в массив,
+; а за ней следуют элементы этого массива, и возвращающая отдельные массивы.
+; Например 3, 4, 0, 2, 1, 2, 2, 4, 5 будет превращено в [4, 0, 2], [2], [4, 5]
 
-;Создаю функцию, принимающую предикат и последовательность
-;Использую let, так как он лучше var:))
-;Разделяю последовательность и возвращаю вектор
-(defn split-seq [pred seq]
-  (let [satisfying (filter pred seq)
-        unsatisfying (remove pred seq)]
-    [satisfying unsatisfying]))
+(defn split-channel [channel]
+  (loop [remaining (seq channel) result []]
+    (if (empty? remaining)
+      result
+      (let [count-to-take (first remaining)
+            new-remaining (next remaining)
+            sub-array (take count-to-take new-remaining)]
+        (recur (drop count-to-take new-remaining) (conj result sub-array))))))
 
-;Для примера задаю ленивую последовательность
-(def numbers (range 1 11))
-
-;Получается, пересоздал существующую функцию (зато сам, все для примера)
-(defn is-even? [x] (even? x))
-
-;Снова let, вывожу результаты
-(let [[even-nums odd-nums] (split-seq is-even? numbers)]
-  (println "Четные числа:" even-nums)
-  (println "Нечетные числа:" odd-nums))
+(def input-channel [5 1 2 3 4 5 3 1 2 3 2 1 2 1 1 6 1 2 3 4 5 6])
+(def result (split-channel input-channel))
+(println result)
