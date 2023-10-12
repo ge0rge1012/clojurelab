@@ -1,17 +1,37 @@
-; Напишите функцию, которая принимает на вход канал состоящий из последовательности чисел,
-; первое из которых является количеством последующих элементов, которые нужно поместить в массив,
-; а за ней следуют элементы этого массива, и возвращающая отдельные массивы.
-; Например 3, 4, 0, 2, 1, 2, 2, 4, 5 будет превращено в [4, 0, 2], [2], [4, 5]
+(require '[clojure.core.async :as async])
 
-(defn split-channel [channel]
-  (loop [remaining (seq channel) result []]
-    (if (empty? remaining)
-      result
-      (let [count-to-take (first remaining)
-            new-remaining (next remaining)
-            sub-array (take count-to-take new-remaining)]
-        (recur (drop count-to-take new-remaining) (conj result sub-array))))))
+(defn process-channel [input-chan result-chan]
+  (async/go
+    (let [data (async/<! input-chan)]
+      (let [data-array (clojure.string/split data #"\s+")]
+        (let [data-as-integers (mapv #(Integer. %) data-array)]
+          (loop [remaining data-as-integers result []]
+            (if (empty? remaining)
+              (do
+                (println "In function:" result)
+                (async/>! result-chan result)
+                nil)
+              (let [count-to-take (first remaining)
+                    new-remaining (next remaining)
+                    sub-array (take count-to-take new-remaining)]
+                (recur (drop count-to-take new-remaining) (conj result sub-array)))))
+          )))))
 
-(def input-channel [5 1 2 3 4 5 3 1 2 3 2 1 2 1 1 6 1 2 3 4 5 6])
-(def result (split-channel input-channel))
-(println result)
+
+(def input-chan (async/chan))
+(def result-chan (async/chan))
+
+(async/go
+  (async/>! input-chan "5 1 2 3 4 5 3 1 2 3 2 1 2 1 1 6 1 2 3 4 5 6"))
+
+(process-channel input-chan result-chan)
+
+(async/timeout 1000)
+
+(async/go
+  (let [result (async/<! result-chan)]
+    (println "Received from channel:" result)))
+
+
+(async/close! input-chan)
+(async/close! result-chan)
