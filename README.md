@@ -1,5 +1,6 @@
 ## Result:
-![image](https://github.com/ge0rge1012/clojurelab/assets/43102245/121dfe76-a951-49b7-b02c-07d8462d5ef4)
+![image](https://github.com/ge0rge1012/clojurelab/assets/43102245/4295bca3-106d-417e-a25c-9be2ec00dae4)
+
 
 
 ## License
